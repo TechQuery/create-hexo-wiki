@@ -1,0 +1,66 @@
+{
+  "name": "create-hexo-wiki",
+  "version": "0.6.0",
+  "description": "Wiki-site generator based on Hexo & Git",
+  "keywords": [
+    "wiki",
+    "website",
+    "generator",
+    "hexo",
+    "git"
+  ],
+  "author": "shiy2008@gmail.com",
+  "license": "AGPL-3.0",
+  "homepage": "https://tech-query.me/create-hexo-wiki/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TechQuery/create-hexo-wiki.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TechQuery/create-hexo-wiki/issues"
+  },
+  "bin": "dist/index.js",
+  "engines": {
+    "node": "^6.3.0"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.2.5",
+    "@babel/runtime": "^7.2.0",
+    "@tech_query/node-toolkit": "^0.8.2",
+    "commander": "^2.19.0",
+    "cross-spawn": "^6.0.5",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5",
+    "simple-git": "^1.107.0",
+    "yaml": "^1.2.0"
+  },
+  "scripts": {
+    "lint": "eslint source/ --fix",
+    "build": "babel source/ -d dist/",
+    "test": "npm run lint  &&  npm run build",
+    "prepublishOnly": "npm test",
+    "install": "node dist/ update"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/preset-env": "^7.2.3",
+    "eslint": "^5.12.0"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "6.3.0"
+          }
+        }
+      ]
+    ],
+    "plugins": [
+      "@babel/plugin-transform-runtime"
+    ]
+  }
+}
