@@ -36,7 +36,7 @@
   },
   "scripts": {
     "lint": "eslint source/ --fix",
-    "build": "babel source/ -d dist/",
+    "build": "babel source/ -d dist/ -s",
     "test": "npm run lint  &&  npm run build",
     "prepublishOnly": "npm test",
     "install": "node dist/ update"

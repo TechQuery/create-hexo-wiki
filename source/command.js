@@ -1,14 +1,15 @@
-import { creator_meta, bootGit, setRoot } from './core';
+import {
+    creator_meta, spawnSync, copyFromGit, bootGit, setRoot, step
+} from './core';
 
 import request from 'request-promise-native';
 
 import { parse } from 'yaml';
 
 import {
-    ensureDirSync, writeJSON, readJSON, remove, readFile, writeFile
+    ensureDirSync, writeJSON, readJSON, remove, existsSync, readdirSync, move,
+    readFile, writeFile
 } from 'fs-extra';
-
-import spawn from 'cross-spawn';
 
 import { join } from 'path';
 
@@ -18,11 +19,11 @@ const { path } = creator_meta;
 
 export  function ensureHexo() {
     try {
-        spawn.sync('hexo', ['-v']);
+        spawnSync('hexo', ['-v']);
 
     } catch (error) {
 
-        spawn.sync('npm',  ['install', 'hexo-cli', '-g'],  {stdio: 'inherit'});
+        spawnSync('npm',  ['install', 'hexo-cli', '-g'],  {stdio: 'inherit'});
     }
 }
 
@@ -74,67 +75,97 @@ export  async function install(cwd, type, name) {
         }
 
     if ( NPM[0] )
-        spawn.sync('npm',  ['install'].concat( NPM ),  command_option);
+        spawnSync('npm',  ['install'].concat( NPM ),  command_option);
 
     if ( Git[0] )
-        for (let item of Git) {
+        for (let item of Git)
+            await copyFromGit(item.link, `themes/${item.name}/`, cwd);
 
-            spawn.sync(
-                'git',
-                ['clone',  item.link + '.git',  `themes/${item.name}/`],
-                command_option
-            );
-
-            await remove( join(cwd, `themes/${item.name}/.git/`) );
-        }
-
-    return  NPM.concat( Git );
+    return  NPM.concat( Git.map(item => item.name) );
 }
 
+
+async function addTheme(cwd, name, config) {
+
+    name = await install(cwd, 'theme', name);
+
+    if (! name[0])  return;
+
+    for (let key of name) {
+
+        const path = join(cwd, `themes/${key}`);
+
+        if ( existsSync(`${path}/_config.yml`) )  continue;
+
+        for (let file  of  readdirSync( path ))
+            if (/^_config\..*yml.*/.test( file )) {
+
+                await move(`${path}/${file}`, `${path}/_config.yml`);  break;
+            }
+    }
+
+    await remove( join(cwd, 'themes/landscape') );
+
+    return  config.replace(/^theme:.+/m,  `theme: ${name[0]}`);
+}
 
 /**
  * Boot a directory as a WebCell project
  *
- * @param {String}   [cwd='.'] - Current working directory
- * @param {String[]} [plugin]
- * @param {String[]} [theme]
+ * @param {String}     [cwd='.'] - Current working directory
+ * @param {String[]}   [plugin]
+ * @param {String[]}   [theme]
+ * @param {String|URL} [remote]  - Git URL of a Remote repository
  */
-export  async function boot(cwd = '.',  plugin,  theme) {
-
-    console.time('Boot Wiki');
-
-    ensureDirSync( cwd );
+export  async function boot(cwd = '.',  plugin,  theme,  remote) {
 
     const command_option = {stdio: 'inherit', cwd},
         config_path = join(cwd, '_config.yml');
 
-    spawn.sync('hexo',  ['init'],  command_option);
+    step('Hexo framework',  () => {
 
-    var config = await readFile(config_path)  +  '';
+        ensureDirSync( cwd );
 
-    const git = await bootGit( cwd );
+        spawnSync('hexo',  ['init'],  command_option);
+    });
 
-    config = config.replace(/\ndeploy:[\s\S]+/, `
+    var config, git;
+
+    await step('Git repository & branch',  async () => {
+
+        config = await readFile(config_path)  +  '',
+        git = await bootGit(cwd, remote);
+
+        await git.raw(['checkout', '--orphan', 'hexo']);
+
+        config = config.replace(/\ndeploy:[\s\S]+/, `
 deploy:
-  type: git,
+  type: git
   repo: ${git.getRemotes()[0]}
   branch:`
-    );
-
-    await setRoot(cwd, git);
-
-    spawn.sync('npm',  ['install'],  command_option);
-
-    if ( plugin[0] )  await install(cwd, 'plugin', plugin);
-
-    if ( theme[0] )
-        config = config.replace(
-            /^theme:.+/m,  `theme: ${await install(cwd, 'theme', theme)}`
         );
+    });
 
-    await writeFile(config_path,  config);
+    await step('NPM package',  setRoot.bind(null, cwd, git));
 
-    console.info('--------------------');
-    console.timeEnd('Boot Wiki');
-    console.info('');
+    await step('Hexo plugin',  async () => {
+
+        spawnSync('npm',  ['install'],  command_option);
+
+        if ( plugin[0] )  await install(cwd, 'plugin', plugin);
+    });
+
+    await step('Hexo theme',  async () => {
+
+        if ( theme[0] )  config = await addTheme(cwd, theme, config);
+
+        await writeFile(config_path,  config);
+    });
+
+    await step('Git commit',  async () => {
+
+        await git.add('.');
+
+        await git.commit('[ Add ]  Framework of Hexo wiki');
+    });
 }
