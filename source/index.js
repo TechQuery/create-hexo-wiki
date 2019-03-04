@@ -2,18 +2,22 @@
 
 import '@babel/polyfill';
 
-import { creator_meta } from './core';
+import { _meta_ } from './core';
 
 import Commander from 'commander';
 
-import { ensureHexo, update, boot } from './command';
+import { ensureCommand } from '@tech_query/node-toolkit';
+
+import { update, boot } from './command';
 
 
-const { meta } = creator_meta, package_pattern = /^([@\-\w]+,?)+$/;
+const package_pattern = /^([@\-\w]+,?)+$/;
 
 
 Commander
-    .name( meta.name ).version( meta.version ).description( meta.description )
+    .name( _meta_.name )
+    .version( _meta_.version )
+    .description( _meta_.description )
     .option(
         '-p, --plugins <list>',
         'Plugins to install (comma separated)',
@@ -32,7 +36,7 @@ Commander
 
         console.time('Update');
 
-        ensureHexo();
+        await ensureCommand('hexo');
 
         await update('plugin');
 

@@ -27,12 +27,12 @@ npm init hexo-wiki repo_name \
     --remote https://github.com/your_id/repo_name.git
 ```
 
-### 3. Setup Online services
+### 4. Setup Online services
 
  - [Static Pages host](https://pages.github.com/)
  - [Auto updater](https://github.com/marketplace/travis-ci)
 
-### 4. Upload whole site
+### 5. Upload whole site
 
 ```Shell
 git push

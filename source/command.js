@@ -1,6 +1,4 @@
-import {
-    creator_meta, spawnSync, copyFromGit, bootGit, setRoot, step
-} from './core';
+import { _base_, setRoot, copyFromGit } from './core';
 
 import request from 'request-promise-native';
 
@@ -13,19 +11,9 @@ import {
 
 import { join } from 'path';
 
+import { step, spawn } from '@tech_query/node-toolkit';
 
-const { path } = creator_meta;
-
-
-export  function ensureHexo() {
-    try {
-        spawnSync('hexo', ['-v']);
-
-    } catch (error) {
-
-        spawnSync('npm',  ['install', 'hexo-cli', '-g'],  {stdio: 'inherit'});
-    }
-}
+import { bootGit } from 'create-es-pack/dist/core';
 
 
 /**
@@ -37,9 +25,9 @@ export  async function update(type) {
         `https://raw.githubusercontent.com/hexojs/site/master/source/_data/${type}s.yml`
     ));
 
-    ensureDirSync(`${path}/data`);
+    ensureDirSync(`${_base_}/data`);
 
-    await writeJSON(`${path}/data/${type}.json`,  list,  {spaces: 4});
+    await writeJSON(`${_base_}/data/${type}.json`,  list,  {spaces: 4});
 
     console.info(`[ Update ]  ${list.length} ${type}s`);
 }
@@ -61,21 +49,24 @@ function packageMatch(simple, full) {
  */
 export  async function install(cwd, type, name) {
 
-    const list = await readJSON(`${path}/data/${type}.json`);
+    const list = await readJSON(`${_base_}/data/${type}.json`);
 
     const NPM = [ ],  Git = [ ],  command_option = {stdio: 'inherit', cwd};
 
-    for (let item of list)
-        if (name.find(key  =>  packageMatch(key, item.name))) {
+    list.forEach(item => {
 
-            if (item.link.includes('npmjs.com/')  ||  (type === 'plugin'))
-                NPM.push( item.name );
-            else
-                Git.push( item );
-        }
+        if (! name.find(key  =>  packageMatch(key, item.name)))  return;
+
+        if ( item.link.includes('npmjs.com/') )
+            NPM.push( item.name );
+        else if (type === 'plugin')
+            NPM.push( item.link );
+        else
+            Git.push( item );
+    });
 
     if ( NPM[0] )
-        spawnSync('npm',  ['install'].concat( NPM ),  command_option);
+        await spawn('npm',  ['install'].concat( NPM ),  command_option);
 
     if ( Git[0] )
         for (let item of Git)
@@ -122,11 +113,11 @@ export  async function boot(cwd = '.',  plugin,  theme,  remote) {
     const command_option = {stdio: 'inherit', cwd},
         config_path = join(cwd, '_config.yml');
 
-    step('Hexo framework',  () => {
+    await step('Hexo framework',  async () => {
 
         ensureDirSync( cwd );
 
-        spawnSync('hexo',  ['init'],  command_option);
+        await spawn('hexo',  ['init'],  command_option);
     });
 
     var config, git;
@@ -141,7 +132,7 @@ export  async function boot(cwd = '.',  plugin,  theme,  remote) {
         config = config.replace(/\ndeploy:[\s\S]+/, `
 deploy:
   type: git
-  repo: ${git.getRemotes()[0]}
+  repo: ${(await git.getRemotes( true ))[0].refs.push}
   branch:`
         );
     });
@@ -150,7 +141,7 @@ deploy:
 
     await step('Hexo plugin',  async () => {
 
-        spawnSync('npm',  ['install'],  command_option);
+        await spawn('npm',  ['install'],  command_option);
 
         if ( plugin[0] )  await install(cwd, 'plugin', plugin);
     });
