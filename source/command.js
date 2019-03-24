@@ -1,8 +1,8 @@
-import { _base_, setRoot, copyFromGit } from './core';
+import { _base_, setRoot, copyFromGit, setPWA } from './core';
 
 import request from 'request-promise-native';
 
-import { parse } from 'yaml';
+import { parse, stringify } from 'yaml';
 
 import {
     ensureDirSync, writeJSON, readJSON, remove, existsSync, readdirSync, move,
@@ -11,7 +11,7 @@ import {
 
 import { join } from 'path';
 
-import { step, spawn } from '@tech_query/node-toolkit';
+import { step, spawn, ensureCommand } from '@tech_query/node-toolkit';
 
 import { bootGit } from 'create-es-pack/dist/core';
 
@@ -70,7 +70,7 @@ export  async function install(cwd, type, name) {
 
     if ( Git[0] )
         for (let item of Git)
-            await copyFromGit(item.link, `themes/${item.name}/`, cwd);
+            await copyFromGit(item.link,  join(cwd, `themes/${item.name}/`));
 
     return  NPM.concat( Git.map(item => item.name) );
 }
@@ -78,11 +78,14 @@ export  async function install(cwd, type, name) {
 
 async function addTheme(cwd, name, config) {
 
-    name = await install(cwd, 'theme', name);
+    const theme = await install(cwd, 'theme', name);
 
-    if (! name[0])  return;
+    if (! theme[0])
+        throw ReferenceError(
+            `Theme "${name}" can't be found in Hexo offical index`
+        );
 
-    for (let key of name) {
+    for (let key of theme) {
 
         const path = join(cwd, `themes/${key}`);
 
@@ -97,7 +100,7 @@ async function addTheme(cwd, name, config) {
 
     await remove( join(cwd, 'themes/landscape') );
 
-    return  config.replace(/^theme:.+/m,  `theme: ${name[0]}`);
+    return  config.replace(/^theme:.+/m,  `theme: ${theme[0]}`);
 }
 
 /**
@@ -115,9 +118,9 @@ export  async function boot(cwd = '.',  plugin,  theme,  remote) {
 
     await step('Hexo framework',  async () => {
 
-        ensureDirSync( cwd );
+        await ensureCommand('hexo');
 
-        await spawn('hexo',  ['init'],  command_option);
+        await copyFromGit('https://github.com/hexojs/hexo-starter.git', cwd);
     });
 
     var config, git;
@@ -133,13 +136,30 @@ export  async function boot(cwd = '.',  plugin,  theme,  remote) {
 deploy:
   type: git
   repo: ${(await git.getRemotes( true ))[0].refs.push}
-  branch:`
+  branch: master`
         );
     });
 
     await step('NPM package',  setRoot.bind(null, cwd, git));
 
     await step('Hexo plugin',  async () => {
+
+        const meta = parse( config );
+
+        config += '\n\n' + stringify({
+            pwa:  setPWA({
+                name:         meta.title,
+                description:  meta.subtitle || meta.description,
+                lang:         meta.language,
+                start_url:    meta.url,
+                scope:        meta.root,
+                icon:         {
+                    src:    'image/Hexo.png',
+                    type:   'image/png',
+                    sizes:  '128x128'
+                }
+            })
+        });
 
         await spawn('npm',  ['install'],  command_option);
 
@@ -148,7 +168,14 @@ deploy:
 
     await step('Hexo theme',  async () => {
 
-        if ( theme[0] )  config = await addTheme(cwd, theme, config);
+        if ( theme[0] )  try {
+
+            config = await addTheme(cwd, theme, config);
+
+        } catch (error) {
+
+            console.error( error.message );
+        }
 
         await writeFile(config_path,  config);
     });

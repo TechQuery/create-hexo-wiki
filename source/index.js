@@ -6,8 +6,6 @@ import { _meta_ } from './core';
 
 import Commander from 'commander';
 
-import { ensureCommand } from '@tech_query/node-toolkit';
-
 import { update, boot } from './command';
 
 
@@ -29,14 +27,12 @@ Commander
     .option(
         '-r, --remote <URL>',
         'Git URL of a Remote repository',
-        /^(git|https?)/
+        /^(git|https?):\S+/
     )
     .command('update', 'Update list of Plugins & Themes')
     .on('command:update',  async () => {
 
         console.time('Update');
-
-        await ensureCommand('hexo');
 
         await update('plugin');
 

@@ -24,13 +24,19 @@ export  const _meta_ = JSON.parse( config );
 /**
  * @param {String|URL} URI       - Git URL
  * @param {String}     [path=''] - Copy to the path
- * @param {String}     [cwd='.']
+ * @param {?Boolean}   recurse   - Recurse sub-modules
  */
-export  async function copyFromGit(URI,  path = '',  cwd = '.') {
+export  async function copyFromGit(URI,  path = '',  recurse) {
 
-    await spawn('git',  ['clone', URI , path],  {stdio: 'inherit', cwd});
+    const parameter = ['clone', URI , path];
 
-    await remove( join(cwd, path, '.git/') );
+    if ( recurse )  parameter.splice(1, 0, '--recurse-submodules');
+
+    await spawn('git',  parameter,  {stdio: 'inherit'});
+
+    await remove( join(path, '.git/') );
+
+    if (! recurse)  await remove( join(path, '.gitmodules') );
 }
 
 
@@ -50,4 +56,68 @@ export  async function setRoot(path, git) {
     config.meta.name = packageNameOf( path ), config.meta.version = '1.0.0';
 
     await outputJSON(config.path, config.meta);
+}
+
+
+/**
+ * @param {Object} [meta={}] - https://github.com/lavas-project/hexo-pwa#options
+ *
+ * @return {Object}
+ */
+export function setPWA({
+    name, start_url, description, scope = '/', lang = 'en-US', dir = 'ltr', icon
+} = { }) {
+
+    return {
+        manifest: {
+            path: '/manifest.json',
+            body: {
+                name,
+                short_name: name,
+                start_url,
+                description,
+                scope,
+                display: 'standalone',
+                orientation: 'any',
+                lang,
+                dir,
+                theme_color: 'rgba(0,0,0,0.5)',
+                background_color: 'transparent',
+                icons: [icon]
+            }
+        },
+        serviceWorker: {
+            path: '/sw.js',
+            preload: {
+                urls: [scope],
+                posts: 5
+            },
+            opts: {
+                networkTimeoutSeconds: 5
+            },
+            routes: [
+                {
+                    pattern: '!!js/regexp /\\//',
+                    strategy: 'networkFirst'
+                },
+                {
+                    pattern: '!!js/regexp /.*\\.(css|js|jpg|jpeg|png|gif|webp)$/',
+                    strategy: 'cacheFirst'
+                },
+                {
+                    pattern: '!!js/regexp /google.*\\.com/',
+                    strategy: 'networkOnly'
+                },
+                {
+                    pattern: '!!js/regexp /disqus.*\\.com/',
+                    strategy: 'networkOnly'
+                },
+                {
+                    pattern: '!!js/regexp /cnzz\\.com/',
+                    strategy: 'networkOnly'
+                }
+            ]
+        },
+        priority: 5
+    };
 }

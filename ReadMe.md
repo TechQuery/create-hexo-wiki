@@ -11,7 +11,7 @@
 
 ### 1. Choose a Theme & Plugins
 
- - https://hexo.io/plugins/
+ - https://hexo.io/plugins/ ([Some plugins][1] have been included)
  - https://hexo.io/themes/
 
 ### 2. Create a Git repository
@@ -30,7 +30,7 @@ npm init hexo-wiki repo_name \
 ### 4. Setup Online services
 
  - [Static Pages host](https://pages.github.com/)
- - [Auto updater](https://github.com/marketplace/travis-ci)
+ - [Auto updater](https://github.com/marketplace/travis-ci) ([Environment varibles][2])
 
 ### 5. Upload whole site
 
@@ -58,6 +58,10 @@ git push
 
 ## Reference Documents
 
- - [Tutorial](https://tech-query.me/development/hello-hexo-travis/)
+ - [Tutorial](https://shimo.im/docs/PcIvVWp7Ok8qnb5X)
 
  - [Source code](https://github.com/TechQuery/create-hexo-wiki)
+
+
+ [1]: https://github.com/TechQuery/create-hexo-wiki/blob/master/template/package.json#L13
+ [2]: https://tech-query.me/development/hello-hexo-travis/

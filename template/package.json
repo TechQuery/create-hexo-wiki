@@ -11,8 +11,8 @@
     "build": "hexo clean  &&  hexo generate"
   },
   "dependencies": {
-    "hexo-cli": "^1.1.0",
     "hexo-deployer-git": "^1.0.0",
+    "hexo-pwa": "^0.1.3",
     "hexo-reference": "^1.0.4"
   }
 }
