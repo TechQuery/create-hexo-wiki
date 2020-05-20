@@ -1,6 +1,6 @@
 branches:
     only:
-        - hexo
+        - master
 
 language: node_js
 node_js:
@@ -12,11 +12,11 @@ cache:
 install:
     - npm install
 script:
-    - npm run build
+    - npm run prepublishOnly
 deploy:
     provider: pages
     on:
-        branch: hexo
+        branch: master
     skip_cleanup: true
-    local_dir: public/
+    local_dir: docs/
     token: ${TOKEN}

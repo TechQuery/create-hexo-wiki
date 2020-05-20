@@ -1,18 +1,17 @@
 {
-  "keywords": [
-    "wiki"
-  ],
-  "directories": {
-    "doc": "source/_post/"
-  },
-  "scripts": {
-    "start": "hexo clean  &&  hexo server",
-    "deploy": "hexo clean  &&  hexo deploy",
-    "build": "hexo clean  &&  hexo generate"
-  },
-  "dependencies": {
-    "hexo-deployer-git": "^1.0.0",
-    "hexo-pwa": "^0.1.3",
-    "hexo-reference": "^1.0.4"
-  }
+    "keywords": [
+        "wiki"
+    ],
+    "directories": {
+        "doc": "source/_post/"
+    },
+    "scripts": {
+        "start": "hexo clean  &&  hexo server",
+        "deploy": "hexo clean  &&  hexo deploy",
+        "build": "hexo clean  &&  hexo generate"
+    },
+    "dependencies": {
+        "hexo-deployer-git": "^2.1.0",
+        "hexo-reference": "^1.0.4"
+    }
 }

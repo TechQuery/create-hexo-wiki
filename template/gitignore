@@ -1,0 +1,14 @@
+# Node.JS
+package-lock.json
+node_modules/
+
+# Building
+db.json
+public/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store

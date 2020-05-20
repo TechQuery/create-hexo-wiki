@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "rootDir": "source/",
+        "outDir": "dist/",
+        "declaration": true,
+        "skipLibCheck": true,
+        "target": "ES2017",
+        "module": "CommonJS",
+        "moduleResolution": "Node",
+        "esModuleInterop": true,
+        "jsx": "react",
+        "jsxFactory": "createCommand",
+        "lib": ["ES2019", "DOM"]
+    },
+    "typedocOptions": {
+        "name": "Hexo Wiki creator",
+        "mode": "file",
+        "excludeExternals": true,
+        "excludeNotExported": true,
+        "readme": "./ReadMe.md",
+        "out": "docs/"
+    }
+}

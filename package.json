@@ -1,80 +1,73 @@
 {
-  "name": "create-hexo-wiki",
-  "version": "0.7.0",
-  "description": "Wiki-site generator based on Hexo & Git",
-  "keywords": [
-    "wiki",
-    "website",
-    "generator",
-    "hexo",
-    "git"
-  ],
-  "author": "shiy2008@gmail.com",
-  "license": "AGPL-3.0",
-  "homepage": "https://tech-query.me/create-hexo-wiki/",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/TechQuery/create-hexo-wiki.git"
-  },
-  "bugs": {
-    "url": "https://github.com/TechQuery/create-hexo-wiki/issues"
-  },
-  "bin": "dist/index.js",
-  "engines": {
-    "node": "^6.3.0"
-  },
-  "dependencies": {
-    "@babel/polyfill": "^7.4.0",
-    "@babel/runtime": "^7.4.2",
-    "@tech_query/node-toolkit": "^0.9.3",
-    "commander": "^2.19.0",
-    "create-es-pack": "^0.4.6",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.7",
-    "yaml": "^1.4.0"
-  },
-  "scripts": {
-    "lint": "eslint source/ --fix",
-    "build": "babel source/ -d dist/ -s",
-    "test": "npm run lint  &&  npm run build",
-    "prepublishOnly": "npm test",
-    "install": "node dist/ update"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm test  &&  git add ."
-    }
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.4.0",
-    "@babel/plugin-transform-runtime": "^7.4.0",
-    "@babel/preset-env": "^7.4.2",
-    "babel-plugin-inline-import": "^3.0.0",
-    "eslint": "^5.15.3",
-    "husky": "^1.3.1"
-  },
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "node": "6.3.0"
-          }
-        }
-      ]
+    "name": "create-hexo-wiki",
+    "version": "1.0.0",
+    "description": "Wiki-site generator based on Hexo & Git",
+    "keywords": [
+        "wiki",
+        "website",
+        "generator",
+        "hexo",
+        "git"
     ],
-    "plugins": [
-      [
-        "babel-plugin-inline-import",
-        {
-          "extensions": [
-            ".json"
-          ]
+    "author": "shiy2008@gmail.com",
+    "license": "AGPL-3.0",
+    "homepage": "https://tech-query.me/create-hexo-wiki/",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/TechQuery/create-hexo-wiki.git"
+    },
+    "bugs": {
+        "url": "https://github.com/TechQuery/create-hexo-wiki/issues"
+    },
+    "bin": "dist/index.js",
+    "dependencies": {
+        "@tech_query/node-toolkit": "^1.0.3",
+        "commander-jsx": "0.5.0",
+        "create-es-pack": "^1.1.0",
+        "fs-extra": "^9.0.0",
+        "node-fetch": "^2.6.0",
+        "yaml": "^1.10.0"
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "trailingComma": "none",
+        "arrowParens": "avoid",
+        "singleQuote": true
+    },
+    "lint-staged": {
+        "*.{md,json,yml}": [
+            "prettier --write"
+        ],
+        "*.{ts,tsx}": [
+            "eslint --fix",
+            "prettier --write"
+        ]
+    },
+    "scripts": {
+        "test": "lint-staged",
+        "build": "rm -rf dist/  &&  tsc  &&  typedoc",
+        "prepublishOnly": "npm test  &&  npm run build",
+        "start": "typedoc  &&  open-cli docs/index.html"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "npm test",
+            "pre-push": "npm run build"
         }
-      ],
-      "@babel/plugin-transform-runtime"
-    ]
-  }
+    },
+    "devDependencies": {
+        "@types/fs-extra": "^8.1.1",
+        "@types/node": "^14.0.4",
+        "@types/node-fetch": "^2.5.7",
+        "@typescript-eslint/eslint-plugin": "^2.34.0",
+        "@typescript-eslint/parser": "^2.34.0",
+        "eslint": "^7.0.0",
+        "husky": "^4.2.5",
+        "lint-staged": "^10.2.4",
+        "open-cli": "^6.0.1",
+        "prettier": "^2.0.5",
+        "simple-git": "^2.5.0",
+        "typedoc": "^0.17.7",
+        "typescript": "^3.9.3"
+    }
 }
