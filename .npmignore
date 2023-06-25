@@ -3,4 +3,6 @@ data/
 .editorconfig
 .eslintrc.json
 !template/*
-.travis.yml
+docs/
+.github/
+.husky/

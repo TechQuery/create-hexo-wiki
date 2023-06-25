@@ -1,25 +1,22 @@
 #! /usr/bin/env node
 
-import { Command, createCommand } from 'commander-jsx';
+import { Command, Executor, createCommand } from 'commander-jsx';
 
 import { meta } from './core';
-import { update, boot } from './command';
+import { update, boot, BootOption } from './command';
 
 const package_pattern = /^([@\-\w]+,?)+$/,
     repository_pattern = /^(git|ssh|https?):\/\/\S+\.git$/;
 
-async function create(
-    { plugins, theme = 'Wikitten', pages, remote },
-    path: string
-) {
+const create: Executor<BootOption> = async (option, path) => {
     console.time('Boot Wiki');
 
-    await boot({ path, plugins, theme, pages, remote });
+    await boot({ ...option, path } as BootOption);
 
     console.info('--------------------');
     console.timeEnd('Boot Wiki');
     console.info('\n[ Document ]  https://tech-query.me/create-hexo-wiki/\n');
-}
+};
 
 async function refresh() {
     console.time('Update');
@@ -32,12 +29,13 @@ async function refresh() {
 }
 
 Command.execute(
-    <create-hexo-wiki
+    <Command
+        name="create-hexo-wiki"
         parameters="<command> [options]"
-        version={meta.version}
         description={meta.description}
     >
-        <create
+        <Command<Omit<BootOption, 'path'>>
+            name="create"
             parameters="<path>"
             description="Create a Hexo Wiki project"
             options={{
@@ -67,10 +65,11 @@ Command.execute(
             }}
             executor={create}
         />
-        <update
+        <Command
+            name="update"
             description="Update list of Plugins &amp; Themes"
             executor={refresh}
         />
-    </create-hexo-wiki>,
+    </Command>,
     process.argv.slice(2)
 );
