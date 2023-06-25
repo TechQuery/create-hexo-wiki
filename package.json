@@ -1,6 +1,6 @@
 {
     "name": "create-hexo-wiki",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Wiki-site generator based on Hexo & Git",
     "keywords": [
         "wiki",
@@ -21,12 +21,13 @@
     },
     "bin": "dist/index.js",
     "dependencies": {
-        "@tech_query/node-toolkit": "^1.0.3",
-        "commander-jsx": "0.5.0",
+        "@tech_query/node-toolkit": "^1.2.1",
+        "commander-jsx": "^0.6.5",
         "create-es-pack": "^1.1.0",
-        "fs-extra": "^9.0.0",
-        "node-fetch": "^2.6.0",
-        "yaml": "^1.10.0"
+        "fs-extra": "^11.1.1",
+        "node-fetch": "^2.6.11",
+        "tslib": "^2.5.3",
+        "yaml": "^2.3.1"
     },
     "prettier": {
         "tabWidth": 4,
@@ -35,39 +36,31 @@
         "singleQuote": true
     },
     "lint-staged": {
-        "*.{md,json,yml}": [
-            "prettier --write"
-        ],
-        "*.{ts,tsx}": [
-            "eslint --fix",
-            "prettier --write"
-        ]
+        "*.{md,json,yml,ts,tsx}": "prettier --write",
+        "*.{ts,tsx}": "eslint --fix"
     },
     "scripts": {
+        "prepare": "husky install",
         "test": "lint-staged",
-        "build": "rm -rf dist/  &&  tsc  &&  typedoc",
+        "build": "rm -rf dist/  &&  tsc  &&  typedoc source/",
         "prepublishOnly": "npm test  &&  npm run build",
-        "start": "typedoc  &&  open-cli docs/index.html"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "npm test",
-            "pre-push": "npm run build"
-        }
+        "start": "typedoc source/ &&  open-cli docs/index.html"
     },
     "devDependencies": {
-        "@types/fs-extra": "^8.1.1",
-        "@types/node": "^14.0.4",
-        "@types/node-fetch": "^2.5.7",
-        "@typescript-eslint/eslint-plugin": "^2.34.0",
-        "@typescript-eslint/parser": "^2.34.0",
-        "eslint": "^7.0.0",
-        "husky": "^4.2.5",
-        "lint-staged": "^10.2.4",
-        "open-cli": "^6.0.1",
-        "prettier": "^2.0.5",
-        "simple-git": "^2.5.0",
-        "typedoc": "^0.17.7",
-        "typescript": "^3.9.3"
+        "@types/fs-extra": "^11.0.1",
+        "@types/node": "^18.16.18",
+        "@types/node-fetch": "^2.6.4",
+        "@typescript-eslint/eslint-plugin": "^5.60.0",
+        "@typescript-eslint/parser": "^5.60.0",
+        "eslint": "^8.43.0",
+        "eslint-config-prettier": "^8.8.0",
+        "husky": "^8.0.3",
+        "lint-staged": "^13.2.2",
+        "open-cli": "^7.2.0",
+        "prettier": "^2.8.8",
+        "simple-git": "^3.19.0",
+        "typedoc": "^0.24.8",
+        "typedoc-plugin-mdn-links": "^3.0.3",
+        "typescript": "~5.1.3"
     }
 }

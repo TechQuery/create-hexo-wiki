@@ -3,7 +3,7 @@
 **Wiki-site** generator based on [Hexo][1] & [Git][2].
 
 [![NPM Dependency](https://david-dm.org/TechQuery/create-hexo-wiki.svg)][4]
-[![Build Status](https://travis-ci.com/EasyWebApp/create-hexo-wiki.svg?branch=master)][5]
+[![CI & CD](https://github.com/TechQuery/create-hexo-wiki/actions/workflows/main.yml/badge.svg)][5]
 
 [![NPM](https://nodei.co/npm/create-hexo-wiki.png?downloads=true&downloadRank=true&stars=true)][6]
 
@@ -58,7 +58,7 @@ git push
 
 ## Reference Documents
 
--   [Tutorial](https://shimo.im/docs/PcIvVWp7Ok8qnb5X)
+-   [Tutorial](https://fcc-cd.dev/activity/workshop/hexo-web-app/)
 
 -   [Source code](https://github.com/TechQuery/create-hexo-wiki)
 
@@ -66,7 +66,7 @@ git push
 [2]: https://git-scm.com/
 [3]: https://developers.google.com/web/progressive-web-apps/
 [4]: https://david-dm.org/TechQuery/create-hexo-wiki
-[5]: https://travis-ci.com/EasyWebApp/create-hexo-wiki
+[5]: https://github.com/TechQuery/create-hexo-wiki/actions/workflows/main.yml
 [6]: https://nodei.co/npm/create-hexo-wiki/
 [7]: https://github.com/TechQuery/create-hexo-wiki/blob/master/template/package.json#L13
 [8]: https://tech-query.me/development/hello-hexo-travis/

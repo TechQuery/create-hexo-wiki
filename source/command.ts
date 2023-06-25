@@ -96,22 +96,24 @@ async function addTheme(path: string, name: string, config) {
     return config.replace(/^theme:.+/m, `theme: ${name}`);
 }
 
+export interface BootOption {
+    path?: string;
+    plugins?: string[];
+    theme?: string;
+    pages?: string[];
+    remote?: string | URL;
+}
+
 /**
  * Boot a directory as a Hexo Wiki project
  */
 export async function boot({
     path = '.',
     plugins = [],
-    theme,
+    theme = 'Wikitten',
     pages = [],
     remote
-}: {
-    path?: string;
-    plugins?: string[];
-    theme?: string;
-    pages?: string[];
-    remote?: string | URL;
-} = {}) {
+}: BootOption = {}) {
     const command_option: SpawnOptions = { stdio: 'inherit', cwd: path },
         config_path = join(path, '_config.yml');
 

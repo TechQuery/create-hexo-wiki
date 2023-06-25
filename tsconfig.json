@@ -3,21 +3,20 @@
         "rootDir": "source/",
         "outDir": "dist/",
         "declaration": true,
-        "skipLibCheck": true,
         "target": "ES2017",
         "module": "CommonJS",
         "moduleResolution": "Node",
         "esModuleInterop": true,
         "jsx": "react",
         "jsxFactory": "createCommand",
+        "importHelpers": true,
         "lib": ["ES2019", "DOM"]
     },
     "typedocOptions": {
         "name": "Hexo Wiki creator",
-        "mode": "file",
         "excludeExternals": true,
-        "excludeNotExported": true,
+        "excludePrivate": true,
         "readme": "./ReadMe.md",
-        "out": "docs/"
+        "plugin": ["typedoc-plugin-mdn-links"]
     }
 }
